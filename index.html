@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operational Command & Branch Leadership | UCF Federal Credit Union</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #0f1114;
+            --bg-tertiary: #15181c;
+            --accent-amber: #ffb800;
+            --accent-emerald: #00e5a0;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #00d4ff;
+            --text-primary: #ffffff;
+            --text-secondary: #a8b0bc;
+            --text-tertiary: #5a6270;
+            --glass-bg: rgba(20, 24, 30, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Vault Grid Background */
+        .vault-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.02;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-amber), var(--accent-emerald), var(--accent-blue));
+            z-index: 1000;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* Floating Timeline */
+        .timeline-container {
+            position: fixed;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-line {
+            width: 2px;
+            height: 200px;
+            background: linear-gradient(180deg, var(--accent-amber), var(--accent-emerald));
+            position: relative;
+            border-radius: 1px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-amber);
+            border-radius: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px var(--accent-amber);
+            transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .timeline-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+        }
+
+        .timeline-year.active {
+            color: var(--accent-amber);
+            text-shadow: 0 0 10px var(--accent-amber);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 80px 40px;
+            background: radial-gradient(ellipse at center, rgba(255,184,0,0.04) 0%, transparent 60%);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-amber);
+            margin-bottom: 40px;
+            backdrop-filter: blur(20px);
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-amber);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero-title {
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-role {
+            font-size: clamp(18px, 2.5vw, 28px);
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .hero-company {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--accent-emerald);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .hero-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+        }
+
+        .hero-description {
+            max-width: 650px;
+            margin: 40px auto 0;
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Pillar Sections */
+        .pillar-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 80px 60px;
+            overflow: hidden;
+        }
+
+        .pillar-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .pillar-content {
+            z-index: 10;
+        }
+
+        .pillar-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .pillar-title {
+            font-size: clamp(32px, 3.5vw, 52px);
+            font-weight: 700;
+            margin-bottom: 40px;
+            line-height: 1.2;
+        }
+
+        .responsibility-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(24px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .responsibility-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--card-accent, var(--accent-cyan));
+            opacity: 0.6;
+        }
+
+        .responsibility-card:hover {
+            transform: translateX(8px);
+            border-color: var(--card-accent, var(--accent-cyan));
+            box-shadow: 0 0 30px rgba(255,184,0,0.08);
+        }
+
+        .responsibility-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Visual Container */
+        .visual-container {
+            position: relative;
+            height: 550px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Glass Panel Base */
+        .glass-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(28px) saturate(140%);
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.03),
+                0 40px 80px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        /* Transition Panels */
+        .transition-panel {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, transparent 70%);
+        }
+
+        .transition-arrow {
+            font-size: 40px;
+            color: var(--text-tertiary);
+            margin: 16px 0;
+            opacity: 0.4;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        .transition-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+        }
+
+        /* Pillar 1: Scheduling Grid */
+        .scheduling-panel {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+        }
+
+        .scheduling-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .scheduling-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-tertiary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-cell.active {
+            background: rgba(0,229,160,0.1);
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+
+        .day-cell.staffed {
+            background: rgba(0,212,255,0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .day-indicator {
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 9px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .evaluation-list {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .evaluation-title {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .eval-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 11px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .eval-item:last-child {
+            border-bottom: none;
+        }
+
+        .eval-checkbox {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--glass-border);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--accent-emerald);
+        }
+
+        .eval-checkbox.checked {
+            background: rgba(0,229,160,0.2);
+            border-color: var(--accent-emerald);
+        }
+
+        /* Pillar 2: Security Panel */
+        .security-panel {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .security-shield {
+            width: 100px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .shield-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .shield-bg {
+            fill: rgba(255,184,0,0.1);
+            stroke: var(--accent-amber);
+            stroke-width: 2;
+        }
+
+        .shield-icon {
+            fill: var(--accent-amber);
+        }
+
+        .security-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,184,0,0.1);
+            border: 1px solid rgba(255,184,0,0.3);
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--accent-amber);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-amber);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .cash-gauge {
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+        }
+
+        .gauge-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .gauge-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-emerald), var(--accent-amber));
+            border-radius: 4px;
+            transition: width 1.5s ease-out;
+        }
+
+        .gauge-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 9px;
+            color: var(--text-tertiary);
+        }
+
+        .policy-panel {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(255,184,0,0.05);
+            border: 1px solid rgba(255,184,0,0.2);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .policy-title {
+            font-size: 10px;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .policy-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Pillar 3: Vault Visual */
+        .vault-visual {
+            width: 100%;
+            max-width: 450px;
+            height: 450px;
+            position: relative;
+        }
+
+        .vault-door {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,229,160,0.1), transparent);
+            border: 3px solid var(--accent-emerald);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vault-inner {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vault-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .vault-label {
+            font-size: 10px;
+            color: var(--accent-emerald);
+            letter-spacing: 2px;
+        }
+
+        .cash-meter {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            padding: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+        }
+
+        .meter-title {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .meter-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-emerald);
+            text-align: center;
+        }
+
+        .inventory-cards {
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .inv-card {
+            padding: 10px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .inv-card span {
+            color: var(--accent-emerald);
+            font-weight: 600;
+        }
+
+        /* Pillar 4: Process Flow */
+        .process-visual {
+            width: 100%;
+            max-width: 500px;
+            height: 480px;
+            position: relative;
+        }
+
+        .flowchart-container {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            height: 200px;
+        }
+
+        .flow-node {
+            position: absolute;
+            padding: 10px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            font-size: 10px;
+            color: var(--accent-blue);
+            letter-spacing: 1px;
+            opacity: 0;
+        }
+
+        .flow-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), transparent);
+            transform-origin: left center;
+            opacity: 0;
+        }
+
+        .dept-map {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .dept-node {
+            padding: 14px 8px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 9px;
+            color: var(--text-tertiary);
+            letter-spacing: 1px;
+            opacity: 0;
+        }
+
+        .dept-node.active {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59,130,246,0.1);
+        }
+
+        .sop-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            padding: 16px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 10px;
+            text-align: center;
+            opacity: 0;
+        }
+
+        .sop-title {
+            font-size: 10px;
+            color: var(--accent-blue);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .sop-status {
+            font-size: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 40px;
+            background: radial-gradient(ellipse at center, rgba(255,184,0,0.03) 0%, transparent 70%);
+            text-align: center;
+        }
+
+        .footer-tagline {
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 550px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .timeline-container {
+                display: none;
+            }
+
+            .pillar-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .pillar-section {
+                padding: 60px 24px;
+            }
+
+            .visual-container {
+                height: 400px;
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 24px;
+            }
+
+            .week-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .dept-map {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Reveal */
+        .reveal-up { opacity: 0; transform: translateY(30px); }
+        .reveal-left { opacity: 0; transform: translateX(-30px); }
+        .reveal-right { opacity: 0; transform: translateX(30px); }
+        .reveal-scale { opacity: 0; transform: scale(0.9); }
+    </style>
+</head>
+<body>
+    <!-- Vault Grid Background -->
+    <div class="vault-grid"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Floating Timeline -->
+    <div class="timeline-container">
+        <div class="timeline-year" id="year2009">2009</div>
+        <div class="timeline-line">
+            <div class="timeline-marker" id="timelineMarker"></div>
+        </div>
+        <div class="timeline-year active" id="year2012">2012</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge reveal-scale">Operational Command Center</div>
+            <h1 class="hero-title reveal-up">Branch Leadership<br>& Operations</h1>
+            <p class="hero-role reveal-up">MSR II, III / Team Lead</p>
+            <p class="hero-company reveal-up">UCF Federal Credit Union — Orlando, FL</p>
+            <p class="hero-meta reveal-up">02/21/2009 – 09/22/2012</p>
+            <p class="hero-description reveal-up">
+                Mastering operational discipline before building analytical systems. Leading branch personnel, 
+                securing assets, and architecting the processes that power financial operations.
+            </p>
+        </div>
+    </section>
+
+    <!-- Pillar 1: Workforce & Personnel Leadership -->
+    <section class="pillar-section" id="pillar1" style="background: radial-gradient(ellipse at 80% 50%, rgba(0,212,255,0.05) 0%, transparent 50%), radial-gradient(ellipse at 20% 50%, rgba(0,229,160,0.05) 0%, transparent 50%);">
+        <div class="pillar-container">
+            <div class="pillar-content">
+                <div class="pillar-number reveal-left" style="color: var(--accent-cyan);">PILLAR 01 / WORKFORCE LEADERSHIP</div>
+                <h2 class="pillar-title reveal-left" style="color: var(--accent-cyan);">Personnel<br>& Performance Management</h2>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-cyan);">
+                    <p class="responsibility-text">Schedule staff hours as needed to adequately cover business needs.</p>
+                </div>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-emerald);">
+                    <p class="responsibility-text">Coordinate with the VP of Operations for personnel needs and ensure that all department personnel are meeting job standards. Ensure that employee evaluations are completed in a timely manner.</p>
+                </div>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-emerald);">
+                    <p class="responsibility-text">Responsible for quality, quantity, accuracy, and timeliness of work produced by branch personnel daily.</p>
+                </div>
+            </div>
+            
+            <div class="visual-container">
+                <div class="glass-panel scheduling-panel reveal-right">
+                    <div class="scheduling-header">
+                        <span class="scheduling-title">Weekly Staff Schedule</span>
+                    </div>
+                    
+                    <div class="week-grid" id="weekGrid">
+                        <div class="day-cell">M<span class="day-indicator"></span></div>
+                        <div class="day-cell">T<span class="day-indicator"></span></div>
+                        <div class="day-cell">W<span class="day-indicator"></span></div>
+                        <div class="day-cell">T<span class="day-indicator"></span></div>
+                        <div class="day-cell">F<span class="day-indicator"></span></div>
+                        <div class="day-cell staffed">S<span class="day-indicator"></span></div>
+                        <div class="day-cell staffed">S<span class="day-indicator"></span></div>
+                    </div>
+                    
+                    <div class="performance-metrics">
+                        <div class="metric-card" id="metric1">
+                            <div class="metric-label">Quality</div>
+                            <div class="metric-value" id="qualityValue">0%</div>
+                        </div>
+                        <div class="metric-card" id="metric2">
+                            <div class="metric-label">Accuracy</div>
+                            <div class="metric-value" id="accuracyValue">0%</div>
+                        </div>
+                        <div class="metric-card" id="metric3">
+                            <div class="metric-label">Timeliness</div>
+                            <div class="metric-value" id="timeValue">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="evaluation-list">
+                        <div class="evaluation-title">Evaluation Checklist</div>
+                        <div class="eval-item">
+                            <div class="eval-checkbox" id="eval1"></div>
+                            <span>Job Standards Met</span>
+                        </div>
+                        <div class="eval-item">
+                            <div class="eval-checkbox" id="eval2"></div>
+                            <span>Performance Review Complete</span>
+                        </div>
+                        <div class="eval-item">
+                            <div class="eval-checkbox" id="eval3"></div>
+                            <span>Personnel Needs Assessed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transition 1 → 2 -->
+    <section class="transition-panel" id="transition1">
+        <div class="transition-label reveal-up">Leadership</div>
+        <div class="transition-arrow reveal-scale">↓</div>
+        <div class="transition-label reveal-up">Security</div>
+    </section>
+
+    <!-- Pillar 2: Security & Compliance Governance -->
+    <section class="pillar-section" id="pillar2" style="background: radial-gradient(ellipse at center, rgba(255,184,0,0.06) 0%, transparent 50%);">
+        <div class="pillar-container">
+            <div class="pillar-content">
+                <div class="pillar-number reveal-left" style="color: var(--accent-amber);">PILLAR 02 / SECURITY GOVERNANCE</div>
+                <h2 class="pillar-title reveal-left" style="color: var(--accent-amber);">Compliance<br>& Risk Management</h2>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-amber);">
+                    <p class="responsibility-text">Ensure adherence to established security procedures and reporting requirements and ensure that branch personnel comply with established operating procedures and practices.</p>
+                </div>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-amber);">
+                    <p class="responsibility-text">Keep the branch security system in good working order and update staff concerning security procedure and policies, including maintaining the proper levels of working cash and reserve cash.</p>
+                </div>
+            </div>
+            
+            <div class="visual-container">
+                <div class="glass-panel security-panel reveal-scale">
+                    <div class="security-shield" id="securityShield">
+                        <svg class="shield-svg" viewBox="0 0 100 120">
+                            <path class="shield-bg" d="M50 5 L90 25 L90 60 Q90 95 50 115 Q10 95 10 60 L10 25 Z" />
+                            <path class="shield-icon" d="M50 35 L50 75 M35 55 L50 70 L65 55" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="security-status">
+                        <span class="status-dot"></span>
+                        <span>SYSTEM SECURE</span>
+                    </div>
+                    
+                    <div class="cash-gauge">
+                        <div class="gauge-label">Cash Reserve Level</div>
+                        <div class="gauge-bar">
+                            <div class="gauge-fill" id="cashGauge"></div>
+                        </div>
+                        <div class="gauge-markers">
+                            <span>MIN</span>
+                            <span>OPTIMAL</span>
+                            <span>MAX</span>
+                        </div>
+                    </div>
+                    
+                    <div class="policy-panel">
+                        <div class="policy-title">Security Policies Updated</div>
+                        <div class="policy-item">✓ Operating Procedures</div>
+                        <div class="policy-item">✓ Reporting Requirements</div>
+                        <div class="policy-item">✓ Staff Training Complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transition 2 → 3 -->
+    <section class="transition-panel" id="transition2">
+        <div class="transition-label reveal-up">Security</div>
+        <div class="transition-arrow reveal-scale">↓</div>
+        <div class="transition-label reveal-up">Financial Control</div>
+    </section>
+
+    <!-- Pillar 3: Cash & Asset Management Control -->
+    <section class="pillar-section" id="pillar3" style="background: radial-gradient(ellipse at 30% 50%, rgba(0,229,160,0.08) 0%, transparent 50%);">
+        <div class="pillar-container">
+            <div class="pillar-content">
+                <div class="pillar-number reveal-left" style="color: var(--accent-emerald);">PILLAR 03 / ASSET CONTROL</div>
+                <h2 class="pillar-title reveal-left" style="color: var(--accent-emerald);">Cash Management<br>& Inventory Control</h2>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-emerald);">
+                    <p class="responsibility-text">Manage credit union site cash, maintaining the appropriate supply of vault cash.</p>
+                </div>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-emerald);">
+                    <p class="responsibility-text">Verify cash received and maintain inventory of checks, money orders and other negotiable instruments for use in the branch.</p>
+                </div>
+            </div>
+            
+            <div class="visual-container">
+                <div class="vault-visual reveal-scale">
+                    <div class="vault-door" id="vaultDoor">
+                        <div class="vault-inner">
+                            <div class="vault-icon">🏦</div>
+                            <div class="vault-label">VAULT SECURE</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cash-meter">
+                        <div class="meter-title">Vault Cash Balance</div>
+                        <div class="meter-value" id="vaultCash">$0</div>
+                    </div>
+                    
+                    <div class="inventory-cards">
+                        <div class="inv-card">Checks: <span id="checkCount">0</span></div>
+                        <div class="inv-card">Money Orders: <span id="moCount">0</span></div>
+                        <div class="inv-card">Instruments: <span id="instCount">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transition 3 → 4 -->
+    <section class="transition-panel" id="transition3">
+        <div class="transition-label reveal-up">Financial Control</div>
+        <div class="transition-arrow reveal-scale">↓</div>
+        <div class="transition-label reveal-up">Process Architecture</div>
+    </section>
+
+    <!-- Pillar 4: Process Architecture & Documentation -->
+    <section class="pillar-section" id="pillar4" style="background: radial-gradient(ellipse at 70% 50%, rgba(59,130,246,0.08) 0%, transparent 50%);">
+        <div class="pillar-container">
+            <div class="pillar-content">
+                <div class="pillar-number reveal-left" style="color: var(--accent-blue);">PILLAR 04 / PROCESS ARCHITECTURE</div>
+                <h2 class="pillar-title reveal-left" style="color: var(--accent-blue);">Documentation<br>& System Design</h2>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-blue);">
+                    <p class="responsibility-text">Have a general knowledge of the various functions and procedures for all departments of the Credit Union.</p>
+                </div>
+                
+                <div class="responsibility-card reveal-up" style="--card-accent: var(--accent-blue);">
+                    <p class="responsibility-text">Ensure that written procedures are documented for all functions within area of responsibility, and update as necessary, to provide staff with instruction and guidelines for daily operations.</p>
+                </div>
+            </div>
+            
+            <div class="visual-container">
+                <div class="process-visual reveal-scale">
+                    <div class="flowchart-container" id="flowchart">
+                        <!-- Flow nodes added by JS -->
+                    </div>
+                    
+                    <div class="sop-panel" id="sopPanel">
+                        <div class="sop-title">SOP STATUS</div>
+                        <div class="sop-status">📋 ✓</div>
+                    </div>
+                    
+                    <div class="dept-map" id="deptMap">
+                        <div class="dept-node">TELLER</div>
+                        <div class="dept-node">LOANS</div>
+                        <div class="dept-node">MEMBER SVC</div>
+                        <div class="dept-node">OPERATIONS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <h2 class="footer-tagline reveal-up">Before building systems,<br>I mastered operations.</h2>
+        <p class="footer-subtitle reveal-up">UCF Federal Credit Union · MSR II, III / Team Lead · 2009 - 2012</p>
+    </footer>
+
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress Bar
+        gsap.to('#progressBar', {
+            scaleX: 1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // Timeline Marker Animation
+        gsap.to('#timelineMarker', {
+            top: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // Hero Animations
+        gsap.timeline({ delay: 0.3 })
+            .to('.hero-badge', { opacity: 1, scale: 1, duration: 0.8, ease: 'power3.out' })
+            .to('.hero-title', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, '-=0.4')
+            .to('.hero-role', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+            .to('.hero-company', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+            .to('.hero-meta', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+            .to('.hero-description', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4');
+
+        // Pillar 1: Scheduling & Performance Animation
+        ScrollTrigger.create({
+            trigger: '#pillar1',
+            start: 'top 60%',
+            onEnter: () => {
+                // Animate day cells
+                gsap.to('.day-cell', {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.3,
+                    stagger: 0.05,
+                    ease: 'power2.out'
+                });
+
+                // Animate metrics
+                gsap.to('#qualityValue', { 
+                    innerHTML: '98%', 
+                    duration: 1.5, 
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+                gsap.to('#accuracyValue', { 
+                    innerHTML: '99%', 
+                    duration: 1.5, 
+                    delay: 0.2,
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+                gsap.to('#timeValue', { 
+                    innerHTML: '97%', 
+                    duration: 1.5, 
+                    delay: 0.4,
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+
+                // Animate evaluation checkboxes
+                document.querySelectorAll('.eval-checkbox').forEach((box, i) => {
+                    gsap.to(box, {
+                        scale: 1.1,
+                        duration: 0.2,
+                        delay: 1 + i * 0.3,
+                        onComplete: () => {
+                            box.classList.add('checked');
+                            box.innerHTML = '✓';
+                            gsap.to(box, { scale: 1, duration: 0.2 });
+                        }
+                    });
+                });
+            },
+            once: true
+        });
+
+        // Pillar 2: Security Shield Animation
+        ScrollTrigger.create({
+            trigger: '#pillar2',
+            start: 'top 60%',
+            onEnter: () => {
+                // Shield glow animation
+                gsap.to('#securityShield', {
+                    filter: 'drop-shadow(0 0 30px rgba(255,184,0,0.5))',
+                    duration: 1,
+                    ease: 'power2.out'
+                });
+
+                // Cash gauge fill
+                gsap.to('#cashGauge', {
+                    width: '78%',
+                    duration: 2,
+                    delay: 0.5,
+                    ease: 'power2.out'
+                });
+            },
+            once: true
+        });
+
+        // Pillar 3: Vault Animation
+        ScrollTrigger.create({
+            trigger: '#pillar3',
+            start: 'top 60%',
+            onEnter: () => {
+                // Vault door subtle rotation
+                gsap.to('#vaultDoor', {
+                    rotation: 5,
+                    duration: 2,
+                    ease: 'power2.inOut',
+                    yoyo: true,
+                    repeat: 1
+                });
+
+                // Animate vault cash counter
+                gsap.to('#vaultCash', { 
+                    innerHTML: '$847,532', 
+                    duration: 2.5, 
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+
+                // Animate inventory counts
+                gsap.to('#checkCount', { 
+                    innerHTML: '2,847', 
+                    duration: 2, 
+                    delay: 0.3,
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+                gsap.to('#moCount', { 
+                    innerHTML: '1,523', 
+                    duration: 2, 
+                    delay: 0.5,
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+                gsap.to('#instCount', { 
+                    innerHTML: '892', 
+                    duration: 2, 
+                    delay: 0.7,
+                    snap: { innerHTML: 1 },
+                    ease: 'power2.out'
+                });
+            },
+            once: true
+        });
+
+        // Pillar 4: Process Flow Animation
+        ScrollTrigger.create({
+            trigger: '#pillar4',
+            start: 'top 60%',
+            onEnter: () => {
+                const flowchart = document.getElementById('flowchart');
+                
+                // Create flow nodes
+                const nodes = [
+                    { label: 'INPUT', x: 20, y: 20 },
+                    { label: 'PROCESS', x: 150, y: 20 },
+                    { label: 'OUTPUT', x: 280, y: 20 },
+                    { label: 'REVIEW', x: 150, y: 100 }
+                ];
+
+                nodes.forEach((node, i) => {
+                    const nodeEl = document.createElement('div');
+                    nodeEl.className = 'flow-node';
+                    nodeEl.textContent = node.label;
+                    nodeEl.style.left = node.x + 'px';
+                    nodeEl.style.top = node.y + 'px';
+                    flowchart.appendChild(nodeEl);
+
+                    gsap.to(nodeEl, {
+                        opacity: 1,
+                        duration: 0.4,
+                        delay: i * 0.2,
+                        ease: 'power2.out'
+                    });
+                });
+
+                // Create flow lines
+                const lines = [
+                    { x1: 70, y1: 35, x2: 140, y2: 35 },
+                    { x1: 210, y1: 35, x2: 270, y2: 35 },
+                    { x1: 180, y1: 50, x2: 180, y2: 90 }
+                ];
+
+                lines.forEach((line, i) => {
+                    const lineEl = document.createElement('div');
+                    lineEl.className = 'flow-line';
+                    const length = Math.sqrt(Math.pow(line.x2 - line.x1, 2) + Math.pow(line.y2 - line.y1, 2));
+                    const angle = Math.atan2(line.y2 - line.y1, line.x2 - line.x1) * 180 / Math.PI;
+                    
+                    lineEl.style.width = length + 'px';
+                    lineEl.style.left = line.x1 + 'px';
+                    lineEl.style.top = line.y1 + 'px';
+                    lineEl.style.transform = `rotate(${angle}deg)`;
+                    flowchart.appendChild(lineEl);
+
+                    gsap.to(lineEl, {
+                        opacity: 1,
+                        duration: 0.3,
+                        delay: 0.8 + i * 0.15
+                    });
+                });
+
+                // Animate department nodes
+                document.querySelectorAll('.dept-node').forEach((node, i) => {
+                    gsap.to(node, {
+                        opacity: 1,
+                        duration: 0.4,
+                        delay: 1.2 + i * 0.1,
+                        ease: 'power2.out',
+                        onComplete: () => {
+                            node.classList.add('active');
+                        }
+                    });
+                });
+
+                // Show SOP panel
+                gsap.to('#sopPanel', {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.6,
+                    delay: 1.8,
+                    ease: 'back.out(1.7)'
+                });
+            },
+            once: true
+        });
+
+        // Reveal animations for all sections
+        const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-scale');
+        
+        revealElements.forEach(el => {
+            gsap.set(el, { opacity: 0 });
+            
+            let fromVars = { opacity: 0 };
+            if (el.classList.contains('reveal-up')) fromVars.y = 30;
+            if (el.classList.contains('reveal-left')) fromVars.x = -30;
+            if (el.classList.contains('reveal-right')) fromVars.x = 30;
+            if (el.classList.contains('reveal-scale')) fromVars.scale = 0.9;
+
+            gsap.to(el, {
+                ...fromVars,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Transition panel animations
+        document.querySelectorAll('.transition-panel').forEach(panel => {
+            gsap.from(panel.querySelectorAll('.reveal-up, .reveal-scale'), {
+                y: 20,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                scrollTrigger: {
+                    trigger: panel,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Footer animation
+        gsap.from('.footer-tagline, .footer-subtitle', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            scrollTrigger: {
+                trigger: '#footer',
+                start: 'top 80%',
+                toggleActions: 'play none none none'
+            }
+        });
+    </script>
+</body>
+</html>
